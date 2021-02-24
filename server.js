@@ -3,6 +3,7 @@ const cors = require("cors");
 const express = require("express");
 const fs = require("fs");
 const fetch = require("node-fetch");
+const fileType = require('file-type')
 const app = express();
 
 const PORT = 3001;
@@ -45,9 +46,10 @@ app.post("/render", async function (req, res) {
       if (item.type === "image") {
         const response = await fetch(item.src, { mode: "no-cors" });
         const buffer = await response.buffer();
+        const mime = await fileType.fromBuffer(buffer)
         return {
           ...item,
-          src: `data:image/jpeg;base64, ${buffer.toString("base64")}`,
+          src: `data:${mime.mime};base64, ${buffer.toString("base64")}`,
         };
       }
       return item;
